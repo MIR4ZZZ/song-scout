@@ -1,5 +1,5 @@
 #define MyAppName "Song Scout"
-#define MyAppVersion "1.8.1"
+#define MyAppVersion "1.8.2"
 #define MyAppPublisher "Song Scout"
 #define MyAppExeName "SongScout.exe"
 
@@ -33,6 +33,7 @@ Name: "startup"; Description: "Start Song Scout when I sign in"; GroupDescriptio
 [Files]
 Source: "release-package\SongScout.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "release-package\SongScoutRecognizer.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "release-package\_internal\*"; DestDir: "{app}\_internal"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "release-package\README.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "release-package\THIRD_PARTY_NOTICES.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "WinSparkle-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion

@@ -6,7 +6,7 @@ The source is available under the [MIT license](LICENSE).
 
 ## Install and use
 
-1. Run `SongScout-Setup-1.8.1.exe` and finish the short installer.
+1. Run `SongScout-Setup-1.8.2.exe` and finish the short installer.
 2. Play a song through speakers or headphones.
 3. Left-click the Song Scout icon in the Windows notification area.
 4. The quiet listening panel changes into the result after about eight seconds.
@@ -42,6 +42,6 @@ The installer includes its runtime, so no separate framework installation is req
 
 ## Build from source
 
-On Windows, install .NET 10 SDK, Python 3.14, and Inno Setup 6. From this folder, create a Python virtual environment and install `requirements-build.txt`. Run `python -m PyInstaller SongScoutRecognizer.spec` to build the recognition worker. Publish `TrayHost/SongScout.csproj` as a self-contained `win-x64` single file with native libraries included. Put the resulting `SongScout.exe`, the worker `dist/SongScoutRecognizer.exe`, `README.md`, and `THIRD_PARTY_NOTICES.md` in `release-package`, then compile `installer.iss` with Inno Setup. The `NuGet.Config` file supplies the WinSparkle package source.
+On Windows, install .NET 10 SDK, Python 3.14, and Inno Setup 6. From this folder, create a Python virtual environment and install `requirements-build.txt`. Run `python -m PyInstaller SongScoutRecognizer.spec` to build the recognition worker. Publish `TrayHost/SongScout.csproj` as a self-contained `win-x64` single file with native libraries included. Put the resulting `SongScout.exe`, the worker `dist/SongScoutRecognizer/SongScoutRecognizer.exe` and its adjacent `_internal` folder, `README.md`, and `THIRD_PARTY_NOTICES.md` in `release-package`, then compile `installer.iss` with Inno Setup. The `NuGet.Config` file supplies the WinSparkle package source.
 
 For a public update, sign the completed installer with `prepare-appcast.ps1`. Upload the installer and generated `installer-dist/appcast.xml` to the same stable GitHub Release. The signing key belongs outside the source tree and must be backed up. Older releases do not contain the update checker, so their users need the first upgrade manually.
