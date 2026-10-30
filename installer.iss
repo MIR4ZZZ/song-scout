@@ -1,5 +1,5 @@
 #define MyAppName "Song Scout"
-#define MyAppVersion "1.8.2"
+#define MyAppVersion "1.8.3"
 #define MyAppPublisher "Song Scout"
 #define MyAppExeName "SongScout.exe"
 
@@ -31,11 +31,11 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "startup"; Description: "Start Song Scout when I sign in"; GroupDescription: "Additional options:"; Flags: unchecked
 
 [Files]
-Source: "release-package\SongScout.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "TrayHost\bin\Release\net462\*"; DestDir: "{app}"; Excludes: "*.pdb"; Flags: ignoreversion
 Source: "release-package\SongScoutRecognizer.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "release-package\_internal\*"; DestDir: "{app}\_internal"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "release-package\README.md"; DestDir: "{app}"; Flags: ignoreversion
-Source: "release-package\THIRD_PARTY_NOTICES.md"; DestDir: "{app}"; Flags: ignoreversion
+Source: "README.md"; DestDir: "{app}"; Flags: ignoreversion
+Source: "THIRD_PARTY_NOTICES.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "WinSparkle-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "third_party_licenses\*"; DestDir: "{app}\third_party_licenses"; Flags: ignoreversion recursesubdirs createallsubdirs

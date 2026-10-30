@@ -37,6 +37,26 @@ internal static class Preview
         popup.DrawToBitmap(listening, new Rectangle(Point.Empty, popup.Size));
         listening.Save(args[1], ImageFormat.Png);
 
+        if (args.Length > 4 && MotionSettings.Enabled)
+        {
+            var until = DateTime.UtcNow.AddMilliseconds(400);
+            while (DateTime.UtcNow < until)
+            {
+                Application.DoEvents();
+                Thread.Sleep(15);
+            }
+            using var animated = new Bitmap(popup.Width, popup.Height);
+            popup.DrawToBitmap(animated, new Rectangle(Point.Empty, popup.Size));
+            animated.Save(args[4], ImageFormat.Png);
+            var changed = 0;
+            for (var y = 363; y < 391; y++)
+                for (var x = 90; x < 403; x++)
+                    if (listening.GetPixel(x, y) != animated.GetPixel(x, y))
+                        changed++;
+            if (changed < 100)
+                throw new InvalidOperationException("The listening bars did not animate.");
+        }
+
         if (args.Length > 2)
         {
             popup.ShowResult(new RecognitionResult(false, "No match", null, null, null, null));

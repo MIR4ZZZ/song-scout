@@ -1,3 +1,4 @@
+using System.Net.Http;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -17,7 +18,8 @@ internal static class Program
         if (!firstInstance)
             return;
 
-        ApplicationConfiguration.Initialize();
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(false);
         Application.Run(new TrayContext());
         GC.KeepAlive(singleInstance);
     }
@@ -113,21 +115,36 @@ internal sealed class TrayContext : ApplicationContext
 
         try
         {
-            var startInfo = new ProcessStartInfo(recognizerPath)
+            string output = "";
+            string error = "";
+            for (var attempt = 0; attempt < 2; attempt++)
             {
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true,
-                WindowStyle = ProcessWindowStyle.Hidden,
-            };
-            worker = Process.Start(startInfo) ?? throw new InvalidOperationException("The recognition engine could not start.");
-            var outputTask = worker.StandardOutput.ReadToEndAsync();
-            var errorTask = worker.StandardError.ReadToEndAsync();
-            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(60));
-            await worker.WaitForExitAsync(timeout.Token);
-            var output = await outputTask;
-            var error = await errorTask;
+                var startInfo = new ProcessStartInfo(recognizerPath)
+                {
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true,
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                };
+                worker = Process.Start(startInfo) ?? throw new InvalidOperationException("The recognition engine could not start.");
+                var outputTask = worker.StandardOutput.ReadToEndAsync();
+                var errorTask = worker.StandardError.ReadToEndAsync();
+                using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+                var waitTask = Task.Run(() => worker.WaitForExit());
+                if (await Task.WhenAny(waitTask, Task.Delay(Timeout.Infinite, timeout.Token)) != waitTask)
+                    throw new OperationCanceledException();
+                output = await outputTask;
+                error = await errorTask;
+                if (!string.IsNullOrWhiteSpace(output))
+                    break;
+                var exitCode = worker.ExitCode;
+                if (attempt == 1)
+                    throw new InvalidOperationException($"Recognition engine stopped (code {exitCode}). Try again.");
+                worker.Dispose();
+                worker = null;
+                resultPopup.ShowListening();
+            }
 
             var result = JsonSerializer.Deserialize<RecognitionResult>(
                 output.Trim(),
@@ -145,7 +162,7 @@ internal sealed class TrayContext : ApplicationContext
         }
         catch (OperationCanceledException)
         {
-            worker?.Kill(entireProcessTree: true);
+            worker?.Kill();
             ShowStatus("Recognition timed out", "Check the internet connection and try again.");
         }
         catch (Exception error)
@@ -202,7 +219,7 @@ internal sealed class TrayContext : ApplicationContext
     {
         updater.Dispose();
         if (worker is { HasExited: false })
-            worker.Kill(entireProcessTree: true);
+            worker.Kill();
         popup?.Dispose();
         trayIcon.Visible = false;
         trayIcon.Icon?.Dispose();
@@ -363,14 +380,14 @@ internal sealed class ResultPopup : Form
         Controls.Add(primaryButton);
         Controls.Add(secondaryButton);
 
-        progressTimer = new System.Windows.Forms.Timer { Interval = 80 };
+        progressTimer = new System.Windows.Forms.Timer { Interval = 40 };
         progressTimer.Tick += (_, _) =>
         {
             var elapsed = (DateTime.UtcNow - listeningStarted).TotalSeconds;
-            var fraction = Math.Clamp(elapsed / 8, 0, 1);
-            var motionEnabled = SystemInformation.IsMenuAnimationEnabled;
+            var fraction = Compat.Clamp(elapsed / 8, 0, 1);
+            var motionEnabled = MotionSettings.Enabled;
             equalizerStrip.Progress = fraction;
-            equalizerStrip.Phase = motionEnabled ? elapsed * 4 : 0;
+            equalizerStrip.Phase = motionEnabled ? elapsed * 6 : 0;
             waveform.Phase = motionEnabled ? elapsed * 6 : 0.8;
             var pulse = motionEnabled ? (Math.Sin(elapsed * 5) + 1) / 2 : 0.35;
             artworkPanel.BackColor = Blend(Surface, Color.FromArgb(49, 53, 55), pulse * 0.65);
@@ -381,7 +398,7 @@ internal sealed class ResultPopup : Form
         entranceTimer.Tick += (_, _) =>
         {
             var elapsed = (DateTime.UtcNow - entranceStarted).TotalMilliseconds;
-            var progress = Math.Clamp(elapsed / 190, 0, 1);
+            var progress = Compat.Clamp(elapsed / 190, 0, 1);
             var eased = 1 - Math.Pow(1 - progress, 4);
             Opacity = entranceStartOpacity + ((1 - entranceStartOpacity) * eased);
             Location = new Point(entranceTarget.X, entranceTarget.Y + (int)Math.Round(8 * (1 - eased)));
@@ -405,7 +422,7 @@ internal sealed class ResultPopup : Form
     public void ShowAnimated()
     {
         entranceTarget = Location;
-        if (!SystemInformation.IsMenuAnimationEnabled)
+        if (!MotionSettings.Enabled)
         {
             Opacity = 1;
             if (!Visible)
@@ -466,8 +483,9 @@ internal sealed class ResultPopup : Form
             primaryButton.Visible = Uri.TryCreate(result.Url, UriKind.Absolute, out songUri);
             secondaryButton.Text = "Listen again";
             secondaryButton.Visible = true;
-            if (!string.IsNullOrWhiteSpace(result.Cover))
-                _ = LoadArtworkAsync(result.Cover, request);
+            var cover = result.Cover;
+            if (!string.IsNullOrWhiteSpace(cover))
+                _ = LoadArtworkAsync(cover!, request);
         }
         else
         {
@@ -566,7 +584,7 @@ internal sealed class ResultPopup : Form
 
     private static Color Blend(Color from, Color to, double amount)
     {
-        amount = Math.Clamp(amount, 0, 1);
+        amount = Compat.Clamp(amount, 0, 1);
         return Color.FromArgb(
             (int)Math.Round(from.R + ((to.R - from.R) * amount)),
             (int)Math.Round(from.G + ((to.G - from.G) * amount)),
@@ -740,8 +758,10 @@ internal sealed class RoundedButton : Button
         {
             var x = Width / 2f - 43;
             var y = Height / 2f;
-            eventArgs.Graphics.DrawArc(glyphPen, x - 6, y - 6, 12, 12, -55, 310);
-            eventArgs.Graphics.DrawLines(glyphPen, [new PointF(x - 6, y - 7), new PointF(x - 6, y - 1), new PointF(x, y - 1)]);
+            glyphPen.Width = 2.2f;
+            eventArgs.Graphics.DrawArc(glyphPen, x - 7, y - 7, 14, 14, 35, 290);
+            using var arrow = new SolidBrush(textColor);
+            eventArgs.Graphics.FillPolygon(arrow, [new PointF(x + 8, y - 4), new PointF(x + 1, y - 8), new PointF(x + 5, y + 2)]);
         }
 
         if (Focused && ShowFocusCues)
@@ -763,7 +783,7 @@ internal sealed class RoundedButton : Button
     private void AnimateTo(Color color)
     {
         targetBackColor = color;
-        if (!SystemInformation.IsMenuAnimationEnabled)
+        if (!MotionSettings.Enabled)
         {
             animatedBackColor = color;
             Invalidate();
@@ -814,7 +834,7 @@ internal sealed class ReactiveEqualizerStrip : Control
         get => progress;
         set
         {
-            progress = Math.Clamp(value, 0, 1);
+            progress = Compat.Clamp(value, 0, 1);
             Invalidate();
         }
     }
@@ -845,12 +865,14 @@ internal sealed class ReactiveEqualizerStrip : Control
 
         for (var index = 0; index < bars; index++)
         {
-            var energy = (Math.Sin(phase + (index * 0.44)) + Math.Cos((phase * 0.68) - (index * 0.31)) + 2) / 4;
-            var height = 8 + (float)(energy * 26);
+            var energy = (Math.Sin((phase * (0.8 + ((index % 5) * 0.09))) + (index * 0.62)) + 1) / 2;
+            var height = 7 + (float)(energy * 19);
             var x = edge + (index * (barWidth + gap));
             var bounds = new RectangleF(x, (Height - height) / 2, barWidth, height);
             var active = index / (double)(bars - 1) <= progress;
-            var color = active ? AccentColor : BaseColor;
+            var color = active && phase > 0
+                ? Color.FromArgb(175 + (int)(energy * 52), 196 + (int)(energy * 36), 237)
+                : active ? AccentColor : BaseColor;
             using var brush = new SolidBrush(color);
             using var path = UiGeometry.RoundedRectangle(bounds, barWidth / 2);
             eventArgs.Graphics.FillPath(brush, path);
@@ -1026,3 +1048,16 @@ internal sealed record RecognitionResult(
     [property: JsonPropertyName("url")] string? Url,
     [property: JsonPropertyName("cover")] string? Cover
 );
+
+internal static class Compat
+{
+    public static double Clamp(double value, double min, double max) => Math.Min(max, Math.Max(min, value));
+}
+
+internal static class MotionSettings
+{
+    [DllImport("user32.dll")]
+    private static extern bool SystemParametersInfo(uint action, uint param, out bool value, uint winIni);
+
+    public static bool Enabled => SystemParametersInfo(0x1042, 0, out var enabled, 0) && enabled;
+}

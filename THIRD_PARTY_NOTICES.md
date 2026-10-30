@@ -1,6 +1,6 @@
 # Third-party notices
 
-Song Scout's recognition worker bundles these open-source projects and their transitive dependencies:
+Song Scout bundles these open-source projects and their transitive dependencies:
 
 - ShazamIO — MIT License — https://github.com/shazamio/ShazamIO
 - shazamio-core — MIT License — https://github.com/shazamio/shazamio-core
@@ -9,5 +9,6 @@ Song Scout's recognition worker bundles these open-source projects and their tra
 - aiohttp — Apache 2.0 License — https://github.com/aio-libs/aiohttp
 - aiohttp-retry — MIT License — https://github.com/inyutin/aiohttp_retry
 - WinSparkle — MIT License — https://github.com/vslavik/winsparkle (full notice in WinSparkle-LICENSE.txt)
+- System.Text.Json and supporting .NET libraries — MIT License — https://github.com/dotnet/runtime
 
 Their copyright notices and license texts are included in `third_party_licenses` alongside the installed application.
