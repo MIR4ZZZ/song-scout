@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-labelledby="title">
+  <title id="title">Song Scout signal aperture</title>
+  <rect x="8" y="8" width="240" height="240" rx="58" fill="#151718"/>
+  <path d="M178 65 C144 40 89 46 61 84 C30 126 42 183 88 207 C119 223 153 214 179 191" fill="none" stroke="#E3E8EB" stroke-width="22" stroke-linecap="round"/>
+  <rect x="94" y="109" width="19" height="38" rx="9.5" fill="#E3E8EB"/>
+  <rect x="122" y="92" width="19" height="72" rx="9.5" fill="#6689F0"/>
+  <rect x="150" y="110" width="19" height="36" rx="9.5" fill="#E3E8EB"/>
+</svg>

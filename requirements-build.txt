@@ -1,0 +1,5 @@
+aiohttp-retry==2.9.1
+numpy==2.5.4
+pyinstaller==6.22.3
+shazamio==0.9.0
+SoundCard==0.4.6

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>SongScout</AssemblyName>
+    <RootNamespace>SongScout</RootNamespace>
+    <ApplicationIcon>SongScout.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Version>1.8.0</Version>
+    <Authors>Song Scout</Authors>
+    <Product>Song Scout</Product>
+    <Description>Identify music playing through Windows audio.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="WinSparkle" Version="0.9.4" />
+  </ItemGroup>
+</Project>
