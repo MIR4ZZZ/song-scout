@@ -702,6 +702,7 @@ internal sealed class RoundedButton : Button
 
     protected override void OnPaint(PaintEventArgs eventArgs)
     {
+        eventArgs.Graphics.Clear(Parent?.BackColor ?? BackColor);
         eventArgs.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
         var bounds = new RectangleF(0.5f, 0.5f, Width - 1, Height - 1);
         using var path = UiGeometry.RoundedRectangle(bounds, CornerRadius);
@@ -745,8 +746,10 @@ internal sealed class RoundedButton : Button
 
         if (Focused && ShowFocusCues)
         {
-            var focusBounds = Rectangle.Inflate(ClientRectangle, -4, -4);
-            ControlPaint.DrawFocusRectangle(eventArgs.Graphics, focusBounds, textColor, animatedBackColor);
+            var focusBounds = new RectangleF(4.5f, 4.5f, Width - 9, Height - 9);
+            using var focusPath = UiGeometry.RoundedRectangle(focusBounds, Math.Max(0, CornerRadius - 4));
+            using var focusPen = new Pen(textColor, 1.25f);
+            eventArgs.Graphics.DrawPath(focusPen, focusPath);
         }
     }
 

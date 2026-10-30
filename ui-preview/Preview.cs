@@ -45,5 +45,26 @@ internal static class Preview
             popup.DrawToBitmap(unmatched, new Rectangle(Point.Empty, popup.Size));
             unmatched.Save(args[2], ImageFormat.Png);
         }
+
+        if (args.Length > 3)
+        {
+            var close = popup.Controls.OfType<RoundedButton>().Single(button => button.Glyph == ButtonGlyph.Close);
+            close.Focus();
+            Application.DoEvents();
+            using var focused = new Bitmap(popup.Width, popup.Height);
+            popup.DrawToBitmap(focused, new Rectangle(Point.Empty, popup.Size));
+            focused.Save(args[3], ImageFormat.Png);
+            foreach (var corner in new[]
+            {
+                new Point(close.Left + 1, close.Top + 1),
+                new Point(close.Right - 2, close.Top + 1),
+                new Point(close.Left + 1, close.Bottom - 2),
+                new Point(close.Right - 2, close.Bottom - 2),
+            })
+            {
+                if (focused.GetPixel(corner.X, corner.Y).ToArgb() != popup.BackColor.ToArgb())
+                    throw new InvalidOperationException("The close button left a rectangular corner on the popup.");
+            }
+        }
     }
 }

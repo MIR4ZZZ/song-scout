@@ -1,5 +1,5 @@
 #define MyAppName "Song Scout"
-#define MyAppVersion "1.8.0"
+#define MyAppVersion "1.8.1"
 #define MyAppPublisher "Song Scout"
 #define MyAppExeName "SongScout.exe"
 

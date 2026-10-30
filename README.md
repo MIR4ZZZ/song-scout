@@ -6,7 +6,7 @@ The source is available under the [MIT license](LICENSE).
 
 ## Install and use
 
-1. Run `SongScout-Setup-1.8.0.exe` and finish the short installer.
+1. Run `SongScout-Setup-1.8.1.exe` and finish the short installer.
 2. Play a song through speakers or headphones.
 3. Left-click the Song Scout icon in the Windows notification area.
 4. The quiet listening panel changes into the result after about eight seconds.
