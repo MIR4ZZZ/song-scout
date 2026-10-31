@@ -1,6 +1,6 @@
 param(
     [ValidatePattern('^\d+\.\d+\.\d+$')]
-    [string]$Version = '1.8.3',
+    [string]$Version = '1.8.4',
     [string]$KeyFile = (Join-Path $env:LOCALAPPDATA 'SongScoutRelease/update-private.key')
 )
 
