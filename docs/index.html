@@ -3,127 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#111416">
-  <meta name="description" content="Song Scout identifies music playing through your Windows audio with one click. A lightweight, open-source tray app that leaves your microphone alone.">
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="canonical" href="https://mir4zzz.github.io/song-scout/">
-  <title>Song Scout — find the song playing on your PC</title>
-  <style>
-    :root { color-scheme: dark; --bg: #111416; --line: #343a3f; --text: #f2f4f5; --muted: #aeb8bf; --blue: #a8c4ff; }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.55 "Segoe UI Variable", "Segoe UI", system-ui, sans-serif; }
-    a { color: inherit; }
-    a:focus-visible { outline: 3px solid var(--blue); outline-offset: 4px; border-radius: 4px; }
-    .wrap { width: min(1360px, calc(100% - 64px)); margin-inline: auto; }
-    .nav { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 78px; border-bottom: 1px solid var(--line); }
-    .brand { display: inline-flex; align-items: center; gap: 12px; font-size: 17px; font-weight: 700; letter-spacing: -.015em; text-decoration: none; }
-    .brand img { width: 34px; height: 34px; border-radius: 8px; }
-    .nav a:last-child { display: inline-flex; align-items: center; min-height: 44px; color: #c5cdd2; font-size: 14px; font-weight: 600; text-decoration: none; }
-    .nav a:last-child:hover, .inline-link:hover { color: #fff; }
-    .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(340px, 430px); align-items: center; gap: clamp(40px, 6vw, 96px); padding-block: clamp(72px, 7vw, 100px) clamp(80px, 8vw, 112px); }
-    .intro { max-width: 680px; }
-    .platform { display: inline-flex; align-items: center; gap: 10px; margin: 0 0 24px; color: #c4cdd3; font-size: 14px; font-weight: 600; }
-    .platform::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--blue); }
-    h1 { margin: 0; font-size: clamp(48px, 5.6vw, 72px); font-weight: 700; letter-spacing: -.035em; line-height: 1.08; text-wrap: balance; }
-    .lede { max-width: 48ch; margin: 26px 0 0; color: #c4ccd1; font-size: clamp(18px, 1.9vw, 21px); line-height: 1.55; text-wrap: pretty; }
-    .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 22px; margin-top: 36px; }
-    .download { min-height: 54px; padding: 0 22px; display: inline-flex; align-items: center; justify-content: center; gap: 12px; background: #e5ebef; color: #13181b; border: 1px solid #e5ebef; border-radius: 9px; font-size: 15px; font-weight: 700; text-decoration: none; transition: background .18s ease, border-color .18s ease, transform .12s ease; }
-    .download:hover { background: #fff; border-color: #fff; }
-    .download:active { transform: scale(.98); }
-    .download svg { width: 19px; height: 19px; }
-    .inline-link { display: inline-flex; align-items: center; min-height: 44px; color: #c5cdd2; font-size: 14px; font-weight: 600; text-underline-offset: 4px; }
-    .release-info { min-height: 24px; margin: 15px 0 0; color: var(--muted); font-size: 13px; }
-    .preview { margin: 0; }
-    .preview img { display: block; width: 100%; height: auto; border: 1px solid #3a4145; border-radius: 11px; box-shadow: 0 24px 60px rgba(0,0,0,.25); }
-    .preview figcaption { margin-top: 12px; color: #aeb8bf; font-size: 12px; text-align: center; }
-    .section { border-top: 1px solid var(--line); padding-block: 65px 74px; }
-    .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
-    h2 { margin: 0; font-size: clamp(26px, 3vw, 35px); font-weight: 650; letter-spacing: -.025em; line-height: 1.2; text-wrap: balance; }
-    .section-head p { max-width: 38ch; margin: 0; color: var(--muted); font-size: 15px; }
-    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
-    .step { padding-top: 18px; border-top: 1px solid #5a646b; }
-    .step svg { display: block; width: 22px; height: 22px; margin-bottom: 13px; color: var(--blue); }
-    .step h3 { margin: 0 0 8px; font-size: 18px; font-weight: 650; letter-spacing: -.015em; }
-    .step p { margin: 0; color: #b5bec4; font-size: 14px; line-height: 1.6; text-wrap: pretty; }
-    .requirements { display: grid; grid-template-columns: minmax(220px, .7fr) minmax(0, 1.3fr); gap: 50px; }
-    .requirements p { margin: 12px 0 0; color: var(--muted); font-size: 15px; }
-    dl { margin: 0; }
-    .spec { display: grid; grid-template-columns: minmax(120px, .34fr) minmax(0, .66fr); gap: 20px; padding: 15px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
-    .spec:first-child { padding-top: 0; }
-    dt { color: #d7dee2; font-weight: 650; }
-    dd { margin: 0; color: #aeb8bf; }
-    footer { border-top: 1px solid var(--line); padding-block: 27px 38px; color: #9da8af; font-size: 13px; }
-    .footer-inner, .footer-links { display: flex; flex-wrap: wrap; gap: 12px 25px; }
-    .footer-inner { justify-content: space-between; }
-    .footer-links a { display: inline-flex; align-items: center; min-height: 44px; color: #c1cbd1; text-underline-offset: 3px; }
-    .footer-links a:hover { color: #fff; }
-    @media (max-width: 850px) { .hero { grid-template-columns: 1fr; gap: 52px; } .preview { width: min(430px, 100%); } }
-    @media (max-width: 600px) { .wrap { width: calc(100% - 32px); } .nav { min-height: 68px; } .hero { padding-block: 66px 76px; gap: 46px; } .lede { margin-top: 22px; } .section { padding-block: 52px 60px; } .section-head, .requirements { display: block; } .section-head p { margin-top: 14px; } .steps { grid-template-columns: 1fr; gap: 23px; } .requirements dl { margin-top: 25px; } .spec { grid-template-columns: minmax(95px, .35fr) minmax(0, .65fr); gap: 14px; } }
-    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .download { transition: none; } }
-  </style>
+  <meta name="robots" content="noindex">
+  <meta http-equiv="refresh" content="0; url=https://mirasmohamed.cc/songscout/">
+  <link rel="canonical" href="https://mirasmohamed.cc/songscout/">
+  <title>Song Scout has moved</title>
+  <script>location.replace('https://mirasmohamed.cc/songscout/' + location.search + location.hash);</script>
 </head>
 <body>
-  <header class="wrap nav">
-    <a class="brand" href="#top" aria-label="Song Scout home"><img src="favicon.svg" alt="">Song Scout</a>
-    <a href="https://github.com/MIR4ZZZ/song-scout" rel="noopener noreferrer">View on GitHub ↗</a>
-  </header>
-  <main id="top">
-    <section class="wrap hero" aria-labelledby="hero-title">
-      <div class="intro">
-        <p class="platform">Free Windows tray app</p>
-        <h1 id="hero-title">Find the song playing on your PC.</h1>
-        <p class="lede">Click Song Scout in your system tray. It checks the audio playing through your speakers and shows the track, without changing your microphone setup.</p>
-        <div class="actions">
-          <a class="download" id="download" href="https://github.com/MIR4ZZZ/song-scout/releases/latest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v3h16v-3"/></svg><span id="download-label">Get latest release</span></a>
-          <a class="inline-link" href="#how-it-works">How it works</a>
-        </div>
-        <p class="release-info" id="release-info" role="status" aria-live="polite">Latest release on GitHub</p>
-      </div>
-      <figure class="preview"><img src="app-listening.png" alt="Song Scout listening panel showing the audio waveform and microphone-off hint" width="430" height="454"><figcaption>Actual listening view in Song Scout</figcaption></figure>
-    </section>
-    <section class="section" id="how-it-works" aria-labelledby="how-title">
-      <div class="wrap">
-        <div class="section-head"><h2 id="how-title">Three steps. One click from the tray.</h2><p>Song Scout wakes up for a scan and closes the recognizer when it is done.</p></div>
-        <div class="steps">
-          <div class="step"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="m7 4 13 8-13 8V4Z"/></svg><h3>Play something</h3><p>Use your browser, media player, or another app using your default Windows output.</p></div>
-          <div class="step"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3v16l4-4 3 6 3-2-3-6 7-1L5 3Z"/></svg><h3>Click the tray icon</h3><p>Song Scout samples that output for a few seconds. It leaves your microphone alone.</p></div>
-          <div class="step"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg><h3>See the match</h3><p>Get the song and artist, artwork when available, and a link to open the track.</p></div>
-        </div>
-      </div>
-    </section>
-    <section class="section" aria-labelledby="requirements-title">
-      <div class="wrap requirements">
-        <div><h2 id="requirements-title">Before you install</h2><p>The installer is free and works offline. Music recognition needs an internet connection.</p></div>
-        <dl>
-          <div class="spec"><dt>Windows</dt><dd>64-bit Windows 10 version 1607 or newer, or Windows 11</dd></div>
-          <div class="spec"><dt>Audio</dt><dd>Captures system output. Call audio sharing that output may affect a match.</dd></div>
-          <div class="spec"><dt>Updates</dt><dd>The app offers new versions before installing. It does not update silently.</dd></div>
-          <div class="spec"><dt>Good to know</dt><dd>The installer is unsigned, so Windows may show a warning. Matching uses an unofficial Shazam service that may change.</dd></div>
-        </dl>
-      </div>
-    </section>
-  </main>
-  <footer><div class="wrap footer-inner"><span>Song Scout · Open source under MIT</span><div class="footer-links"><a href="https://github.com/MIR4ZZZ/song-scout/releases/latest">Release notes</a><a href="https://github.com/MIR4ZZZ/song-scout">Source code</a><a href="https://github.com/MIR4ZZZ/song-scout/blob/main/LICENSE">License</a></div></div></footer>
-  <script>
-    (async () => {
-      const button = document.getElementById('download');
-      const label = document.getElementById('download-label');
-      const info = document.getElementById('release-info');
-      info.textContent = 'Checking the latest release…';
-      try {
-        const response = await fetch('https://api.github.com/repos/MIR4ZZZ/song-scout/releases/latest', { headers: { Accept: 'application/vnd.github+json' } });
-        if (!response.ok) throw new Error('Release lookup failed');
-        const release = await response.json();
-        const installer = release.assets.find(asset => /^SongScout-Setup-\d+\.\d+\.\d+\.exe$/.test(asset.name));
-        if (!installer || !installer.browser_download_url.startsWith('https://github.com/MIR4ZZZ/song-scout/releases/download/')) throw new Error('Installer unavailable');
-        button.href = installer.browser_download_url;
-        label.textContent = 'Download for Windows';
-        info.textContent = `${release.tag_name} · ${(installer.size / 1_000_000).toFixed(1)} MB · 64-bit Windows`;
-      } catch {
-        info.textContent = 'Open the latest release on GitHub to download.';
-      }
-    })();
-  </script>
+  <p>Song Scout has moved to <a href="https://mirasmohamed.cc/songscout/">mirasmohamed.cc/songscout/</a>.</p>
 </body>
 </html>

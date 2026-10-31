@@ -2,7 +2,7 @@
 
 Song Scout is a lightweight Windows tray app for identifying music playing through the default output device.
 
-[Download Song Scout](https://mir4zzz.github.io/song-scout/)
+[Download Song Scout](https://mirasmohamed.cc/songscout/)
 
 The source is available under the [MIT license](LICENSE).
 
